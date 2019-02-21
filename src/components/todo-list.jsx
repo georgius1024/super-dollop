@@ -14,7 +14,7 @@ const list = items
       onRemove(item.id)
     }
     return ( <TodoItem title={item.title} onRemove={callRemove} key={item.id} /> )
-})
+  })
 
   return (
     <section>
