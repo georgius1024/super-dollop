@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
 import TodoList from './components/todo-list'
 import TodoAdd from './components/todo-add'
+import TodoOrder from './components/todo-order'
 const storeKey = 'state'
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = { items: [], counter: 0 }
+    this.state = { items: [], counter: 0, asc: 1 }
     if (window.localStorage.getItem(storeKey)) {
       try {
         this.state = JSON.parse(window.localStorage.getItem(storeKey))
@@ -14,11 +15,11 @@ class App extends Component {
     }
     this.onRemove = this.onRemove.bind(this)
     this.onAdd = this.onAdd.bind(this)
+    this.onSortOrder = this.onSortOrder.bind(this)
   }
   componentDidUpdate() {
     window.localStorage.setItem(storeKey, JSON.stringify(this.state))
   }
-
   onRemove(id) {
     const [...items] = this.state.items.filter(e => e.id !== id)
     this.setState({ items })
@@ -31,6 +32,9 @@ class App extends Component {
       title
     })
     this.setState({ items, counter })
+  }
+  onSortOrder(asc) {
+    this.setState({ asc })
   }
   render() {
     return (
@@ -47,6 +51,7 @@ class App extends Component {
         <div className="columns is-mobile">
           <div className="column is-half is-offset-one-quarter">
             <TodoAdd onAdd={this.onAdd}></TodoAdd>
+            <TodoOrder value={this.state.asc} onChange={this.onSortOrder}></TodoOrder>
             <TodoList items={this.state.items} onRemove={this.onRemove}></TodoList>
           </div>
         </div>
