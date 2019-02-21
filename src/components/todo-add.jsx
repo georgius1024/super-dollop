@@ -11,9 +11,11 @@ class TodoAdd extends Component {
   }
   onAdd() {
     this.props.onAdd(this.state.value)
+    this.setState({ value: ''})
   }
   render() {
-    <div class="field">
+    return (
+      <div className="field">
       <div className="control">
         <input
           className="input"
@@ -23,10 +25,12 @@ class TodoAdd extends Component {
           onChange={this.onChange}
         />
       </div>
-      <div class="is-pulled-right">
-      <a class="button" onClick={this.onAdd}>Add</a>
+      <div className="is-pulled-right">
+      <a className="button" onClick={this.onAdd}>Add</a>
       </div>
     </div>
+    )
   }
 }
 
+export default TodoAdd
