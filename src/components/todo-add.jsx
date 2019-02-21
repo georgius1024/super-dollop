@@ -15,20 +15,22 @@ class TodoAdd extends Component {
   }
   render() {
     return (
-      <div className="field">
-      <div className="control">
-        <input
-          className="input"
-          type="text"
-          placeholder="Enter task title"
-          value={this.state.value}
-          onChange={this.onChange}
-        />
+      <div className="columns margin-top margin-bottom">
+        <div className="column is-full">
+          <div className="control">
+            <input
+              className="input"
+              type="text"
+              placeholder="Enter task title"
+              value={this.state.value}
+              onChange={this.onChange}
+            />
+          </div>
+        </div>
+        <div className="column">
+          <a className="button" onClick={this.onAdd}>Add</a>
+        </div>
       </div>
-      <div className="is-pulled-right">
-      <a className="button" onClick={this.onAdd}>Add</a>
-      </div>
-    </div>
     )
   }
 }

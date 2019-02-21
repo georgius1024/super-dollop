@@ -1,13 +1,24 @@
 import React, { Component } from 'react';
 import TodoList from './components/todo-list'
 import TodoAdd from './components/todo-add'
+const storeKey = 'state'
 class App extends Component {
   constructor(props) {
     super(props)
     this.state = { items: [], counter: 0 }
+    if (window.localStorage.getItem(storeKey)) {
+      try {
+        this.state = JSON.parse(window.localStorage.getItem(storeKey))
+      } catch (error) {
+      }
+    }
     this.onRemove = this.onRemove.bind(this)
     this.onAdd = this.onAdd.bind(this)
   }
+  componentDidUpdate() {
+    window.localStorage.setItem(storeKey, JSON.stringify(this.state))
+  }
+
   onRemove(id) {
     const [...items] = this.state.items.filter(e => e.id !== id)
     this.setState({ items })
@@ -33,8 +44,12 @@ class App extends Component {
             </div>
           </div>
         </section>
-        <TodoAdd onAdd={this.onAdd}></TodoAdd>
-        <TodoList items={this.state.items} onRemove={this.onRemove}></TodoList>
+        <div className="columns is-mobile">
+          <div className="column is-half is-offset-one-quarter">
+            <TodoAdd onAdd={this.onAdd}></TodoAdd>
+            <TodoList items={this.state.items} onRemove={this.onRemove}></TodoList>
+          </div>
+        </div>
       </div>
     )
   }
