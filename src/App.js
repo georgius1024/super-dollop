@@ -52,7 +52,7 @@ class App extends Component {
           <div className="column is-half is-offset-one-quarter">
             <TodoAdd onAdd={this.onAdd}></TodoAdd>
             <TodoOrder value={this.state.asc} onChange={this.onSortOrder}></TodoOrder>
-            <TodoList items={this.state.items} onRemove={this.onRemove}></TodoList>
+            <TodoList items={this.state.items} order={this.state.asc} onRemove={this.onRemove}></TodoList>
           </div>
         </div>
       </div>
