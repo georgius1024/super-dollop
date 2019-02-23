@@ -17,7 +17,7 @@ const list = items
       onComplete(item)
     }
     const callRemove = () => {
-      onRemove(item.id)
+      onRemove(item)
     }
     return ( 
       <TodoItem 

@@ -21,7 +21,6 @@ export default class TodoEditor extends Component {
       }
     }
   }
-
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown)
     if (this.props.edit) {
@@ -63,22 +62,31 @@ export default class TodoEditor extends Component {
     return (
       <div className={'modal  ' + (this.props.active ? 'is-active' : '')}>
         <div className="modal-background" />
-        <div className="modal-content has-background-white has-text-black-ter form padding-all">
-          <div className="field">
-            <label className="label">Enter task title</label>
-            <div className="control">
-              <input
-                className="input"
-                type="text"
-                placeholder="Enter task title"
-                value={this.state.value}
-                onChange={this.onChange}
-              />
+
+        <div className="modal-card">
+          <header className="modal-card-head">
+            <p className="modal-card-title">Edit task</p>
+            <button className="delete" onClick={this.onClose}></button>
+          </header>
+          <section className="modal-card-body">
+            <div className="field">
+              <label className="label">Enter task title</label>
+              <div className="control">
+                <input
+                  className="input"
+                  type="text"
+                  placeholder="Enter task title"
+                  value={this.state.value}
+                  onChange={this.onChange}
+                />
+              </div>
             </div>
-          </div>
+          </section>
+          <footer className="modal-card-foot">
           <button type="button" className="button is-pulled-right" onClick={this.onSave}>{verb}</button>
+            <button className="button" onClick={this.onClose}>Cancel</button>
+          </footer>
         </div>
-        <button type="button" className="modal-close is-large" onClick={this.onClose} />
       </div>
     )
   }

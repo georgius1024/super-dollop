@@ -3,6 +3,7 @@ import _cloneDeep from 'lodash.clonedeep'
 import TodoList from './components/todo-list'
 import TodoEditor from './components/todo-editor'
 import TodoOrder from './components/todo-order'
+import ConfirmDialog from './components/confirm'
 const storeKey = 'state'
 class App extends Component {
   constructor(props) {
@@ -14,6 +15,8 @@ class App extends Component {
       } catch (error) {
       }
     }
+    this.state.confirm = false
+    this.state.editing = false
     this.onRemove = this.onRemove.bind(this)
     this.onAdd = this.onAdd.bind(this)
     this.onEdit = this.onEdit.bind(this)
@@ -25,9 +28,12 @@ class App extends Component {
   componentDidUpdate() {
     window.localStorage.setItem(storeKey, JSON.stringify(this.state))
   }
-  onRemove(id) {
-    const [...items] = this.state.items.filter(e => e.id !== id)
-    this.setState({ items })
+  onRemove(item) {
+    const onConfirm = () => {
+      const [...items] = this.state.items.filter(e => e.id !== item.id)
+      this.setState({ items, confirm: false })
+    }
+    this.confirm('Confirm', `Delete task "${item.title}"?`, 'Delete', onConfirm)
   }
   onEditorClose() {
     this.setState({ editing: false })
@@ -51,23 +57,50 @@ class App extends Component {
         title
       })
       this.setState({ items, counter, editing: false })
-      }
+    }
   }
   onAdd() {
     this.setState({ editing: true, edit: false })
   }
-  onComplete (item)  {
-    const items = _cloneDeep(this.state.items)
-    const completed = items.find(e => e.id === item.id)
-    if (completed) {
-      completed.completed = true
+  onComplete(item) {
+    const onConfirm = () => {
+      const items = _cloneDeep(this.state.items)
+      const completed = items.find(e => e.id === item.id)
+      if (completed) {
+        completed.completed = true
+      }
+      this.setState({ items, confirm: false })
     }
-    this.setState({ items })
-}
+    this.confirm('Confirm', `Mark task "${item.title}" as completed?`, 'Mark completed', onConfirm)
+  }
   onSortOrder(asc) {
     this.setState({ asc })
   }
+  confirm(title, question, confirmVerb, onConfirm) {
+    const onReject = () => {
+      this.setState({ confirm: false })
+    }
+    const confirm = {
+      title, question, confirmVerb, onConfirm, onReject
+    }
+    this.setState({ confirm })
+  }
   render() {
+    let confirm = ''
+    if (this.state.confirm) {
+      const { title, question, confirmVerb, onConfirm, onReject } = this.state.confirm
+      confirm = (
+        <ConfirmDialog
+          title={title}
+          question={question}
+          confirmVerb={confirmVerb}
+          onConfirm={onConfirm}
+          onReject={onReject}
+        >
+        </ConfirmDialog>
+      )
+    }
+
     return (
       <div className="App">
         <section className="hero">
@@ -82,16 +115,20 @@ class App extends Component {
         <div className="columns is-mobile margin-top">
           <div className="column is-half is-offset-one-quarter">
             <TodoOrder value={this.state.asc} onChange={this.onSortOrder}></TodoOrder>
-            <TodoList 
-              items={this.state.items} 
-              order={this.state.asc} 
-              onEdit={this.onEdit} 
+            <TodoList
+              items={this.state.items}
+              order={this.state.asc}
+              onEdit={this.onEdit}
               onRemove={this.onRemove}
               onComplete={this.onComplete}
             ></TodoList>
             <TodoEditor edit={this.state.edit} active={this.state.editing} onSave={this.onSave} onClose={this.onEditorClose} ></TodoEditor>
+            <button type="button" autofocus className="button is-primary margin-top" onClick={this.onAdd}>
+              Add task
+            </button>
           </div>
         </div>
+        {confirm}
       </div>
     )
   }
