@@ -11,19 +11,21 @@ export default class TodoEditor extends Component {
   }
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    let newValue = ''
-    if (this.props.todo) {
-      newValue = this.props.todo.title
-    }
-    if (this.state.value !== newValue) {
-      this.setValue(newValue)
+    if (prevProps.edit !== this.props.edit) {
+      let newValue = ''
+      if (this.props.edit) {
+        newValue = this.props.edit.title
+      }
+      if (this.state.value !== newValue) {
+        this.setValue(newValue)
+      }
     }
   }
 
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown)
-    if (this.props.todo) {
-      this.setValue(this.props.todo.title)
+    if (this.props.edit) {
+      this.setValue(this.props.edit.title)
     } else {
       this.setValue('')
     }
@@ -32,10 +34,11 @@ export default class TodoEditor extends Component {
     document.removeEventListener('keydown', this.onKeyDown)
   }
   onChange(event) {
+    console.log(event.target.value)
     this.setValue(event.target.value)
   }
   onSave() {
-    this.props.onAdd(this.state.value)
+    this.props.onSave(this.state.value, this.props.edit)
     this.setValue('')
   }
   onKeyDown(event) {
@@ -45,6 +48,8 @@ export default class TodoEditor extends Component {
           return this.onClose()
         case 'Enter':
           return this.onSave()
+        default:
+          return
       }
     }
   }
@@ -55,11 +60,11 @@ export default class TodoEditor extends Component {
     this.props.onClose()
   }
   render() {
-    const verb = this.props.todo ? 'Save' : 'Add'
+    const verb = this.props.edit ? 'Save' : 'Add'
     return (
       <div className={'modal  ' + (this.props.active ? 'is-active' : '')}>
         <div className="modal-background" />
-        <div className="modal-content has-background-white has-text-black-ter form">
+        <div className="modal-content has-background-white has-text-black-ter form padding-all">
           <div className="field">
             <label className="label">Enter task title</label>
             <div className="control">
@@ -72,7 +77,7 @@ export default class TodoEditor extends Component {
               />
             </div>
           </div>
-          <button type="button" className="button" onClick={this.onSave}>{verb}</button>
+          <button type="button" className="button is-pulled-right" onClick={this.onSave}>{verb}</button>
         </div>
         <button type="button" className="modal-close is-large" onClick={this.onClose} />
       </div>

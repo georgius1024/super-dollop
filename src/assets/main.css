@@ -8,8 +8,13 @@
 .margin-left  {
   margin-left: 16px;
 }
+
 .margin-right {
   margin-right: 16px;
+}
+
+.padding-all {
+  padding: 16px;
 }
 
 .order {
