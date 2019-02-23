@@ -34,7 +34,6 @@ export default class TodoEditor extends Component {
     document.removeEventListener('keydown', this.onKeyDown)
   }
   onChange(event) {
-    console.log(event.target.value)
     this.setValue(event.target.value)
   }
   onSave() {

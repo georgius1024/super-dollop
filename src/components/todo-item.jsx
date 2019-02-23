@@ -1,5 +1,19 @@
 import React from 'react'
-export default ({title, onRemove, onEdit, onComplete}) => {
+export default ({title, completed, onRemove, onEdit, onComplete}) => {
+  let completedButton
+  if (!completed) {
+    completedButton = (
+      <button className="button is-small is-success is-pulled-right" onClick={onComplete}>
+        complete
+      </button>
+    )
+  } else {
+    completedButton = (
+      <button className="button is-small is-disabled is-pulled-right">
+        completed
+      </button>
+    )
+  }
   return (
     <article className="box is-info">
       <button className="button is-small is-danger is-pulled-right margin-left" onClick={onRemove}>
@@ -8,9 +22,7 @@ export default ({title, onRemove, onEdit, onComplete}) => {
       <button className="button is-small is-danger is-pulled-right margin-left" onClick={onEdit}>
         edit
       </button>
-      <button className="button is-small is-success is-pulled-right" onClick={onComplete}>
-        complete
-      </button>
+      {completedButton}
       <p>{title}</p>
     </article>    
   )

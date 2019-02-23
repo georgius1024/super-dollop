@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import _cloneDeep from 'lodash.clonedeep'
 import TodoList from './components/todo-list'
 import TodoEditor from './components/todo-editor'
 import TodoOrder from './components/todo-order'
@@ -18,6 +19,7 @@ class App extends Component {
     this.onEdit = this.onEdit.bind(this)
     this.onEditorClose = this.onEditorClose.bind(this)
     this.onSave = this.onSave.bind(this)
+    this.onComplete = this.onComplete.bind(this)
     this.onSortOrder = this.onSortOrder.bind(this)
   }
   componentDidUpdate() {
@@ -35,7 +37,7 @@ class App extends Component {
   }
   onSave(title, item) {
     if (item) {
-      const [...items] = this.state.items
+      const items = _cloneDeep(this.state.items)
       const saved = items.find(e => e.id === item.id)
       if (saved) {
         saved.title = title
@@ -54,6 +56,14 @@ class App extends Component {
   onAdd() {
     this.setState({ editing: true, edit: false })
   }
+  onComplete (item)  {
+    const items = _cloneDeep(this.state.items)
+    const completed = items.find(e => e.id === item.id)
+    if (completed) {
+      completed.completed = true
+    }
+    this.setState({ items })
+}
   onSortOrder(asc) {
     this.setState({ asc })
   }
@@ -69,10 +79,16 @@ class App extends Component {
             </div>
           </div>
         </section>
-        <div className="columns is-mobile">
+        <div className="columns is-mobile margin-top">
           <div className="column is-half is-offset-one-quarter">
             <TodoOrder value={this.state.asc} onChange={this.onSortOrder}></TodoOrder>
-            <TodoList items={this.state.items} order={this.state.asc} onEdit={this.onEdit} onRemove={this.onRemove}></TodoList>
+            <TodoList 
+              items={this.state.items} 
+              order={this.state.asc} 
+              onEdit={this.onEdit} 
+              onRemove={this.onRemove}
+              onComplete={this.onComplete}
+            ></TodoList>
             <TodoEditor edit={this.state.edit} active={this.state.editing} onSave={this.onSave} onClose={this.onEditorClose} ></TodoEditor>
           </div>
         </div>
