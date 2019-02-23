@@ -4,6 +4,7 @@ export default class TodoEditor extends Component {
   constructor(props) {
     super(props)
     this.state = { value: '' }
+    this.input = React.createRef()
     this.onChange = this.onChange.bind(this)
     this.onSave = this.onSave.bind(this)
     this.onClose = this.onClose.bind(this)
@@ -18,6 +19,7 @@ export default class TodoEditor extends Component {
       }
       if (this.state.value !== newValue) {
         this.setValue(newValue)
+        this.input.current.focus()
       }
     }
   }
@@ -28,6 +30,7 @@ export default class TodoEditor extends Component {
     } else {
       this.setValue('')
     }
+    this.input.current.focus()
   }
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeyDown)
@@ -73,6 +76,7 @@ export default class TodoEditor extends Component {
               <label className="label">Enter task title</label>
               <div className="control">
                 <input
+                  ref={this.input}
                   className="input"
                   type="text"
                   placeholder="Enter task title"
@@ -83,7 +87,7 @@ export default class TodoEditor extends Component {
             </div>
           </section>
           <footer className="modal-card-foot">
-          <button type="button" className="button is-pulled-right" onClick={this.onSave}>{verb}</button>
+            <button type="button" className="button is-primary" onClick={this.onSave}>{verb}</button>
             <button className="button" onClick={this.onClose}>Cancel</button>
           </footer>
         </div>

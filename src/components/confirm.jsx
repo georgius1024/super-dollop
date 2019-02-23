@@ -33,7 +33,7 @@ export default class Confirm extends Component {
             <p>{this.props.question}</p>
           </section>
           <footer className="modal-card-foot">
-            <button className="button is-success" onClick={this.props.onConfirm}>{this.props.confirmVerb || 'OK'}</button>
+            <button className="button is-primary" onClick={this.props.onConfirm}>{this.props.confirmVerb || 'OK'}</button>
             <button className="button" onClick={this.props.onReject}>{this.props.rejectVerb || 'Cancel'}</button>
           </footer>
         </div>
