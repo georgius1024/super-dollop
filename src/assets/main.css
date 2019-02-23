@@ -4,3 +4,19 @@
 .margin-bottom {
   margin-bottom: 16px;
 }
+
+.margin-left  {
+  margin-left: 16px;
+}
+.margin-right {
+  margin-right: 16px;
+}
+
+.order {
+  display: flex;
+  align-items: center;
+}
+
+.is-round {
+  border-radius: 50% !important;
+}

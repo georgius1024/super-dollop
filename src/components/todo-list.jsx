@@ -1,6 +1,6 @@
 import React from 'react'
 import TodoItem from './todo-item'
-export default ({items, order, onRemove}) => {
+export default ({items, order, onRemove, onEdit}) => {
 const list = items
 .sort((a, b) => {
     if (Number(order) === 0) {
@@ -10,10 +10,13 @@ const list = items
     }
   })
   .map(item => {
+    const callEdit = () => {
+      onEdit(item)
+    }
     const callRemove = () => {
       onRemove(item.id)
     }
-    return ( <TodoItem title={item.title} onRemove={callRemove} key={item.id} /> )
+    return ( <TodoItem title={item.title} onEdit={callEdit} onRemove={callRemove} key={item.id} /> )
   })
 
   return (
