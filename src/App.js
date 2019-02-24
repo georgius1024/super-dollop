@@ -4,7 +4,7 @@ import TodoList from './components/todo-list'
 import TodoEditor from './components/todo-editor'
 import TodoOrder from './components/todo-order'
 import ConfirmDialog from './components/confirm'
-const storeKey = 'state'
+const storeKey = 'todo-state-storage'
 
 class App extends Component {
   constructor(props) {
