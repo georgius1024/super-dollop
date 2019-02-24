@@ -1,4 +1,5 @@
 import React, { Component } from 'react'
+import _cloneDeep from 'lodash.clonedeep'
 
 export default class TodoEditor extends Component {
   constructor(props) {
@@ -7,70 +8,60 @@ export default class TodoEditor extends Component {
     this.input = React.createRef()
     this.onChange = this.onChange.bind(this)
     this.onSave = this.onSave.bind(this)
-    this.onClose = this.onClose.bind(this)
     this.onKeyDown = this.onKeyDown.bind(this)
   }
 
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    if (prevProps.edit !== this.props.edit) {
-      let newValue = ''
-      if (this.props.edit) {
-        newValue = this.props.edit.title
-      }
-      if (this.state.value !== newValue) {
-        this.setValue(newValue)
-        this.input.current.focus()
-      }
-    }
-  }
   componentDidMount() {
     document.addEventListener('keydown', this.onKeyDown)
-    if (this.props.edit) {
-      this.setValue(this.props.edit.title)
+    if (this.props.todo) {
+      this.setValue(this.props.todo.title)
     } else {
       this.setValue('')
     }
     this.input.current.focus()
   }
+
   componentWillUnmount() {
     document.removeEventListener('keydown', this.onKeyDown)
   }
+
   onChange(event) {
     this.setValue(event.target.value)
   }
+
   onSave() {
-    this.props.onSave(this.state.value, this.props.edit)
-    this.setValue('')
+    let updated = this.props.todo ? _cloneDeep(this.props.todo) : {}
+    updated.title = this.state.value
+    this.props.onSave(updated)
   }
+
   onKeyDown(event) {
-    if (this.props.active) {
-      switch (event.key)  {
-        case 'Escape':
-          return this.onClose()
-        case 'Enter':
-          return this.onSave()
-        default:
-          return
-      }
+    switch (event.key) {
+      case 'Escape':
+        return this.props.onCancel()
+      case 'Enter':
+        return this.onSave()
+      default:
+        return
     }
   }
+
   setValue(value) {
     this.setState({ value })
   }
-  onClose() {
-    this.props.onClose()
-  }
+
   render() {
-    const verb = this.props.edit ? 'Save' : 'Add'
+    const title = this.props.todo ? 'Edit task' : 'Add task'
     return (
-      <div className={'modal  ' + (this.props.active ? 'is-active' : '')}>
+      <div className='modal is-active'>
         <div className="modal-background" />
 
         <div className="modal-card">
           <header className="modal-card-head">
-            <p className="modal-card-title">Edit task</p>
-            <button className="delete" onClick={this.onClose}></button>
+            <p className="modal-card-title">{title}</p>
+            <button className="delete" onClick={this.props.onCancel}></button>
           </header>
+
           <section className="modal-card-body">
             <div className="field">
               <label className="label">Enter task title</label>
@@ -86,9 +77,10 @@ export default class TodoEditor extends Component {
               </div>
             </div>
           </section>
+
           <footer className="modal-card-foot">
-            <button type="button" className="button is-primary" onClick={this.onSave}>{verb}</button>
-            <button className="button" onClick={this.onClose}>Cancel</button>
+            <button type="button" className="button is-primary" onClick={this.onSave}>Save</button>
+            <button className="button" onClick={this.props.onCancel}>Cancel</button>
           </footer>
         </div>
       </div>

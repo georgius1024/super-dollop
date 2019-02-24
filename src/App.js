@@ -8,7 +8,7 @@ const storeKey = 'state'
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = { items: [], counter: 0, asc: 1, edit: {}, editing: false }
+    this.state = { items: [], counter: 0, asc: 1 }
     if (window.localStorage.getItem(storeKey)) {
       try {
         this.state = JSON.parse(window.localStorage.getItem(storeKey))
@@ -20,14 +20,16 @@ class App extends Component {
     this.onRemove = this.onRemove.bind(this)
     this.onAdd = this.onAdd.bind(this)
     this.onEdit = this.onEdit.bind(this)
-    this.onEditorClose = this.onEditorClose.bind(this)
     this.onSave = this.onSave.bind(this)
     this.onComplete = this.onComplete.bind(this)
     this.onSortOrder = this.onSortOrder.bind(this)
   }
+
   componentDidUpdate() {
-    window.localStorage.setItem(storeKey, JSON.stringify(this.state))
+    const { items, counter, asc } = this.state
+    window.localStorage.setItem(storeKey, JSON.stringify({ items, counter, asc }))
   }
+
   onRemove(item) {
     const onConfirm = () => {
       const [...items] = this.state.items.filter(e => e.id !== item.id)
@@ -35,33 +37,31 @@ class App extends Component {
     }
     this.confirm('Confirm', `Delete task "${item.title}"?`, 'Delete', onConfirm)
   }
-  onEditorClose() {
-    this.setState({ editing: false })
+
+  onAdd() {
+    this.setState({ editing: { todo: false} })
   }
+
   onEdit(item) {
-    this.setState({ editing: true, edit: item })
+    this.setState({ editing: { todo: item} })
   }
-  onSave(title, item) {
-    if (item) {
-      const items = _cloneDeep(this.state.items)
-      const saved = items.find(e => e.id === item.id)
-      if (saved) {
-        saved.title = title
+
+  onSave(item) {
+    const items = _cloneDeep(this.state.items)
+    if (item.id) {
+      const saved = items.findIndex(e => e.id === item.id)
+      if (saved >= 0) {
+        items[saved] = item
       }
       this.setState({ items, editing: false })
     } else {
-      const [...items] = this.state.items
       const counter = this.state.counter + 1
-      items.push({
-        id: counter,
-        title
-      })
+      item.id = counter
+      items.push(item)
       this.setState({ items, counter, editing: false })
     }
   }
-  onAdd() {
-    this.setState({ editing: true, edit: false })
-  }
+
   onComplete(item) {
     const onConfirm = () => {
       const items = _cloneDeep(this.state.items)
@@ -77,18 +77,18 @@ class App extends Component {
     this.setState({ asc })
   }
   confirm(title, question, confirmVerb, onConfirm) {
-    const onReject = () => {
-      this.setState({ confirm: false })
-    }
     const confirm = {
-      title, question, confirmVerb, onConfirm, onReject
+      title, question, confirmVerb, onConfirm
     }
     this.setState({ confirm })
   }
   render() {
     let confirm = ''
     if (this.state.confirm) {
-      const { title, question, confirmVerb, onConfirm, onReject } = this.state.confirm
+      const { title, question, confirmVerb, onConfirm } = this.state.confirm
+      const onReject = () => {
+        this.setState({ confirm: false })
+      }
       confirm = (
         <ConfirmDialog
           title={title}
@@ -96,8 +96,21 @@ class App extends Component {
           confirmVerb={confirmVerb}
           onConfirm={onConfirm}
           onReject={onReject}
-        >
-        </ConfirmDialog>
+        />
+      )
+    }
+
+    let editor = ''
+    if (this.state.editing) {
+      const onCancel = () => {
+        this.setState({ editing: false })
+      }
+      editor = (
+        <TodoEditor
+          todo={this.state.editing.todo}
+          onSave={this.onSave}
+          onCancel={onCancel}
+        />
       )
     }
 
@@ -114,21 +127,24 @@ class App extends Component {
         </section>
         <div className="columns is-mobile margin-top">
           <div className="column is-half is-offset-one-quarter">
-            <TodoOrder value={this.state.asc} onChange={this.onSortOrder}></TodoOrder>
+            <TodoOrder 
+              value={this.state.asc} 
+              onChange={this.onSortOrder}
+            />
             <TodoList
               items={this.state.items}
               order={this.state.asc}
               onEdit={this.onEdit}
               onRemove={this.onRemove}
               onComplete={this.onComplete}
-            ></TodoList>
-            <TodoEditor edit={this.state.edit} active={this.state.editing} onSave={this.onSave} onClose={this.onEditorClose} ></TodoEditor>
-            <button type="button" autofocus className="button is-primary margin-top" onClick={this.onAdd}>
+            />
+            <button type="button" autoFocus className="button is-primary margin-top" onClick={this.onAdd}>
               Add task
             </button>
           </div>
         </div>
         {confirm}
+        {editor}
       </div>
     )
   }
