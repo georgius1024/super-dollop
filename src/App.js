@@ -9,13 +9,18 @@ const storeKey = 'state'
 class App extends Component {
   constructor(props) {
     super(props)
-    this.state = { items: [], counter: 0, asc: 1 }
+    const initialState = { items: [], counter: 0, asc: 1 }
+    
     if (window.localStorage.getItem(storeKey)) {
       try {
         this.state = JSON.parse(window.localStorage.getItem(storeKey))
       } catch (error) {
+        this.state = initialState
       }
+    } else {
+      this.state = initialState
     }
+    
     this.state.confirm = false
     this.state.editing = false
     this.onRemove = this.onRemove.bind(this)
