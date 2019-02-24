@@ -5,6 +5,7 @@ import TodoEditor from './components/todo-editor'
 import TodoOrder from './components/todo-order'
 import ConfirmDialog from './components/confirm'
 const storeKey = 'state'
+
 class App extends Component {
   constructor(props) {
     super(props)
@@ -22,20 +23,12 @@ class App extends Component {
     this.onEdit = this.onEdit.bind(this)
     this.onSave = this.onSave.bind(this)
     this.onComplete = this.onComplete.bind(this)
-    this.onSortOrder = this.onSortOrder.bind(this)
+    this.onChangeSortOrder = this.onChangeSortOrder.bind(this)
   }
 
   componentDidUpdate() {
     const { items, counter, asc } = this.state
     window.localStorage.setItem(storeKey, JSON.stringify({ items, counter, asc }))
-  }
-
-  onRemove(item) {
-    const onConfirm = () => {
-      const [...items] = this.state.items.filter(e => e.id !== item.id)
-      this.setState({ items, confirm: false })
-    }
-    this.confirm('Confirm', `Delete task "${item.title}"?`, 'Delete', onConfirm)
   }
 
   onAdd() {
@@ -73,15 +66,26 @@ class App extends Component {
     }
     this.confirm('Confirm', `Mark task "${item.title}" as completed?`, 'Mark completed', onConfirm)
   }
-  onSortOrder(asc) {
+
+  onRemove(item) {
+    const onConfirm = () => {
+      const [...items] = this.state.items.filter(e => e.id !== item.id)
+      this.setState({ items, confirm: false })
+    }
+    this.confirm('Confirm', `Delete task "${item.title}"?`, 'Delete', onConfirm)
+  }
+
+  onChangeSortOrder(asc) {
     this.setState({ asc })
   }
+
   confirm(title, question, confirmVerb, onConfirm) {
     const confirm = {
       title, question, confirmVerb, onConfirm
     }
     this.setState({ confirm })
   }
+
   render() {
     let confirm = ''
     if (this.state.confirm) {
@@ -129,8 +133,9 @@ class App extends Component {
           <div className="column is-half is-offset-one-quarter">
             <TodoOrder 
               value={this.state.asc} 
-              onChange={this.onSortOrder}
+              onChange={this.onChangeSortOrder}
             />
+            
             <TodoList
               items={this.state.items}
               order={this.state.asc}
@@ -138,6 +143,7 @@ class App extends Component {
               onRemove={this.onRemove}
               onComplete={this.onComplete}
             />
+
             <button type="button" autoFocus className="button is-primary margin-top" onClick={this.onAdd}>
               Add task
             </button>
